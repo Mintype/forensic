@@ -5,14 +5,13 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.util.log.Log;
 import net.minecraft.resources.Identifier;
 
-import org.mintype.database.BatchWriter;
-import org.mintype.database.Database;
-import org.mintype.database.LogQueue;
-import org.mintype.database.SQLiteDatabase;
+import org.mintype.database.*;
 import org.mintype.database.model.ActionType;
 import org.mintype.database.model.LogEntry;
+import org.mintype.event.BlockEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +26,9 @@ public class Forensic implements ModInitializer {
     private BatchWriter writer;
     private Thread writerThread;
 
+    private LogQueue queue;
+    private LoggerService logger;
+
 	@Override
 	public void onInitialize() {
 
@@ -39,13 +41,16 @@ public class Forensic implements ModInitializer {
         database = new SQLiteDatabase(dbPath);
         database.init();
 
-        LogQueue queue = new LogQueue();
+        queue = new LogQueue();
+
+        logger = new LoggerService(queue);
 
         writer = new BatchWriter(queue, database);
-
         writerThread = new Thread(writer, "Forensic Writer");
 
         writerThread.start();
+
+        BlockEvents.register(logger);
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             writer.stop();
@@ -54,23 +59,6 @@ public class Forensic implements ModInitializer {
         });
 
         LOGGER.info("Initialized Forensic.");
-
-        PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
-
-            LogEntry entry = new LogEntry(
-                    0,
-                    player.getUUID(),
-                    ActionType.BLOCK_BREAK,
-                    world.toString(),
-                    pos.getX(),
-                    pos.getY(),
-                    pos.getZ(),
-                    System.currentTimeMillis(),
-                    state.getBlock().toString()
-            );
-
-            queue.enqueue(entry);
-        });
 	}
 
 	public static Identifier id(String path) {
