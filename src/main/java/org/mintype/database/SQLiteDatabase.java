@@ -68,6 +68,59 @@ public class SQLiteDatabase implements Database {
     }
 
     @Override
+    public void insertBatch(List<LogEntry> entries) {
+
+        String sql = """
+        INSERT INTO logs
+        (player, action, world, x, y, z, timestamp, data)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+        try {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                for (LogEntry entry : entries) {
+
+                    statement.setString(1, entry.player().toString());
+                    statement.setString(2, entry.action().name());
+                    statement.setString(3, entry.world());
+                    statement.setInt(4, entry.x());
+                    statement.setInt(5, entry.y());
+                    statement.setInt(6, entry.z());
+                    statement.setLong(7, entry.timestamp());
+                    statement.setString(8, entry.data());
+
+                    statement.addBatch();
+                }
+
+                statement.executeBatch();
+            }
+
+            connection.commit();
+
+        } catch (SQLException e) {
+
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackError) {
+                rollbackError.printStackTrace();
+            }
+
+            throw new RuntimeException("Failed to insert batch.", e);
+
+        } finally {
+
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public void close() {
         if (connection == null) {
             return;

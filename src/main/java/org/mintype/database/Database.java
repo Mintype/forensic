@@ -17,6 +17,11 @@ public interface Database {
     void insert(LogEntry entry);
 
     /**
+     * Inserts a batch of log entries.
+     */
+    void insertBatch(List<LogEntry> entries);
+
+    /**
      * Closes the database connection.
      */
     void close();
