@@ -1,4 +1,4 @@
-package org.mintype.database;
+package org.mintype.logging;
 
 import org.mintype.database.model.LogEntry;
 

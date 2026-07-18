@@ -6,6 +6,7 @@ import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.block.state.BlockState;
 import org.mintype.Forensic;
 import org.mintype.database.model.ActionType;
+import org.mintype.logging.DataBuilder;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,7 +65,7 @@ public class ServerExplosionMixin {
                     pos.getX(),
                     pos.getY(),
                     pos.getZ(),
-                    state.getBlock() + "|" + cause
+                    DataBuilder.explosion(cause, state.getBlock().toString())
             );
         }
     }

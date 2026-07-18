@@ -1,6 +1,6 @@
-package org.mintype.database;
+package org.mintype.logging;
 
-import org.mintype.database.LogQueue;
+import com.google.gson.JsonObject;
 import org.mintype.database.model.ActionType;
 import org.mintype.database.model.LogEntry;
 
@@ -21,7 +21,7 @@ public class LoggerService {
             int x,
             int y,
             int z,
-            String data
+            JsonObject data
     ) {
         LogEntry entry = new LogEntry(
                 0,

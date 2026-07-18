@@ -1,5 +1,7 @@
 package org.mintype.database.model;
 
+import com.google.gson.JsonObject;
+
 import java.util.UUID;
 
 public record LogEntry(
@@ -11,5 +13,5 @@ public record LogEntry(
         int y,
         int z,
         long timestamp,
-        String data
+        JsonObject data
 ) {}

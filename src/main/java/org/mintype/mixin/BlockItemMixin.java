@@ -5,6 +5,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.InteractionResult;
 import org.mintype.Forensic;
 import org.mintype.database.model.ActionType;
+import org.mintype.logging.DataBuilder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -46,7 +47,7 @@ public class BlockItemMixin {
                 pos.getX(),
                 pos.getY(),
                 pos.getZ(),
-                ((BlockItem)(Object)this).getBlock().toString()
+                DataBuilder.block(((BlockItem)(Object)this).getBlock().toString())
         );
     }
 }

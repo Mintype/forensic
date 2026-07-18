@@ -51,14 +51,14 @@ public class SQLiteDatabase implements Database {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, entry.player().toString());
+            statement.setString(1, entry.player() == null ? null : entry.player().toString());
             statement.setString(2, entry.action().name());
             statement.setString(3, entry.world());
             statement.setInt(4, entry.x());
             statement.setInt(5, entry.y());
             statement.setInt(6, entry.z());
             statement.setLong(7, entry.timestamp());
-            statement.setString(8, entry.data());
+            statement.setString(8, entry.data() == null ? null : entry.data().toString());
 
             statement.executeUpdate();
 
@@ -90,7 +90,7 @@ public class SQLiteDatabase implements Database {
                     statement.setInt(5, entry.y());
                     statement.setInt(6, entry.z());
                     statement.setLong(7, entry.timestamp());
-                    statement.setString(8, entry.data());
+                    statement.setString(8, entry.data() == null ? null : entry.data().toString());
 
                     statement.addBatch();
                 }

@@ -3,15 +3,13 @@ package org.mintype;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.impl.util.log.Log;
 import net.minecraft.resources.Identifier;
 
 import org.mintype.database.*;
-import org.mintype.database.model.ActionType;
-import org.mintype.database.model.LogEntry;
 import org.mintype.event.BlockEvents;
+import org.mintype.logging.LogQueue;
+import org.mintype.logging.LoggerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

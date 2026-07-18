@@ -2,6 +2,7 @@ package org.mintype.database;
 
 
 import org.mintype.database.model.LogEntry;
+import org.mintype.logging.LogQueue;
 
 import java.util.ArrayList;
 import java.util.List;

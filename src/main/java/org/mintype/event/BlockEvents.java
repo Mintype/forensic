@@ -1,11 +1,9 @@
 package org.mintype.event;
 
+import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.block.state.BlockState;
-import org.mintype.database.LoggerService;
+import org.mintype.logging.DataBuilder;
+import org.mintype.logging.LoggerService;
 import org.mintype.database.model.ActionType;
 
 public class BlockEvents {
@@ -16,6 +14,8 @@ public class BlockEvents {
         PlayerBlockBreakEvents.AFTER.register(
                 (world, player, pos, state, blockEntity) -> {
 
+                    String block = state.getBlock().toString();
+
                     logger.log(
                             player.getUUID(),
                             ActionType.BLOCK_BREAK,
@@ -23,7 +23,7 @@ public class BlockEvents {
                             pos.getX(),
                             pos.getY(),
                             pos.getZ(),
-                            state.getBlock().toString()
+                            DataBuilder.block(block)
                     );
 
                 }
