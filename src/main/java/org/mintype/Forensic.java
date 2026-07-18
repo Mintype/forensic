@@ -2,12 +2,16 @@ package org.mintype;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 
+import org.mintype.command.ForensicCommand;
 import org.mintype.database.*;
 import org.mintype.event.BlockEvents;
+import org.mintype.inspect.InspectListener;
+import org.mintype.inspect.InspectManager;
 import org.mintype.logging.LogQueue;
 import org.mintype.logging.LoggerService;
 import org.slf4j.Logger;
@@ -20,12 +24,13 @@ public class Forensic implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    private Database database;
+    public static Database database;
     private BatchWriter writer;
     private Thread writerThread;
 
     private LogQueue queue;
     public static LoggerService logger;
+    public static final InspectManager inspectManager = new InspectManager();
 
 	@Override
 	public void onInitialize() {
@@ -55,6 +60,13 @@ public class Forensic implements ModInitializer {
             writerThread.interrupt();
             database.close();
         });
+
+        InspectListener.register();
+
+        CommandRegistrationCallback.EVENT.register(
+                (dispatcher, registryAccess, environment) ->
+                        ForensicCommand.register(dispatcher)
+        );
 
         LOGGER.info("Initialized Forensic.");
 	}

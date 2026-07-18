@@ -1,10 +1,15 @@
 package org.mintype.database;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.mintype.database.model.ActionType;
 import org.mintype.database.model.LogEntry;
 
 import java.nio.file.Path;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SQLiteDatabase implements Database {
 
@@ -118,6 +123,75 @@ public class SQLiteDatabase implements Database {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public List<LogEntry> getLogs(
+            String world,
+            int x,
+            int y,
+            int z,
+            int limit
+    ) {
+
+        List<LogEntry> logs = new ArrayList<>();
+
+        String sql = """
+        SELECT *
+        FROM logs
+        WHERE world = ?
+          AND x = ?
+          AND y = ?
+          AND z = ?
+        ORDER BY timestamp DESC
+        LIMIT ?
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, world);
+            statement.setInt(2, x);
+            statement.setInt(3, y);
+            statement.setInt(4, z);
+            statement.setInt(5, limit);
+
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+
+                String playerId = result.getString("player");
+
+                UUID player = playerId == null
+                        ? null
+                        : UUID.fromString(playerId);
+
+                String dataString = result.getString("data");
+
+                JsonObject jsonData = null;
+
+                if (dataString != null) {
+                    jsonData = JsonParser.parseString(dataString)
+                            .getAsJsonObject();
+                }
+
+                logs.add(new LogEntry(
+                        result.getLong("id"),
+                        player,
+                        ActionType.valueOf(result.getString("action")),
+                        result.getString("world"),
+                        result.getInt("x"),
+                        result.getInt("y"),
+                        result.getInt("z"),
+                        result.getLong("timestamp"),
+                        jsonData
+                ));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to query logs.", e);
+        }
+
+        return logs;
     }
 
     @Override

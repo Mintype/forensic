@@ -22,6 +22,17 @@ public interface Database {
     void insertBatch(List<LogEntry> entries);
 
     /**
+     * Gets logs at a specific block position.
+     */
+    List<LogEntry> getLogs(
+            String world,
+            int x,
+            int y,
+            int z,
+            int limit
+    );
+
+    /**
      * Closes the database connection.
      */
     void close();
