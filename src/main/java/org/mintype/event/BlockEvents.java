@@ -19,7 +19,7 @@ public class BlockEvents {
                     logger.log(
                             player.getUUID(),
                             ActionType.BLOCK_BREAK,
-                            world.toString(),
+                            world.dimension().toString(),
                             pos.getX(),
                             pos.getY(),
                             pos.getZ(),
@@ -29,29 +29,29 @@ public class BlockEvents {
                 }
         );
 
-        // Block placing
-        UseBlockCallback.EVENT.register(
-                (player, world, hand, hitResult) -> {
-
-                    if (!world.isClientSide()) {
-
-                        BlockPos pos = hitResult.getBlockPos().relative(hitResult.getDirection());
-
-                        BlockState state = world.getBlockState(pos);
-
-                        logger.log(
-                                player.getUUID(),
-                                ActionType.BLOCK_PLACE,
-                                world.toString(),
-                                pos.getX(),
-                                pos.getY(),
-                                pos.getZ(),
-                                state.getBlock().toString()
-                        );
-                    }
-
-                    return InteractionResult.PASS;
-                }
-        );
+//        // Block placing
+//        UseBlockCallback.EVENT.register(
+//                (player, world, hand, hitResult) -> {
+//
+//                    if (!world.isClientSide()) {
+//
+//                        BlockPos pos = hitResult.getBlockPos().relative(hitResult.getDirection());
+//
+//                        BlockState state = world.getBlockState(pos);
+//
+//                        logger.log(
+//                                player.getUUID(),
+//                                ActionType.BLOCK_PLACE,
+//                                world.dimension().toString(),
+//                                pos.getX(),
+//                                pos.getY(),
+//                                pos.getZ(),
+//                                state.getBlock().toString()
+//                        );
+//                    }
+//
+//                    return InteractionResult.PASS;
+//                }
+//        );
     }
 }

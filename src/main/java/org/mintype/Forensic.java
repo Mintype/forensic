@@ -27,7 +27,7 @@ public class Forensic implements ModInitializer {
     private Thread writerThread;
 
     private LogQueue queue;
-    private LoggerService logger;
+    public static LoggerService logger;
 
 	@Override
 	public void onInitialize() {
