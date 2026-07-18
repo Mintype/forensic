@@ -2,6 +2,7 @@ package org.mintype.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.block.state.BlockState;
 import org.mintype.Forensic;
@@ -14,8 +15,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.world.entity.Entity;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Shadow;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
@@ -58,6 +57,9 @@ public class ServerExplosionMixin {
                         .toString();
             }
 
+            LivingEntity indirect = ((ServerExplosion)(Object) this)
+                    .getIndirectSourceEntity();
+
             Forensic.logger.log(
                     null,
                     ActionType.EXPLOSION,
@@ -65,7 +67,11 @@ public class ServerExplosionMixin {
                     pos.getX(),
                     pos.getY(),
                     pos.getZ(),
-                    DataBuilder.explosion(cause, state.getBlock().toString())
+                    DataBuilder.explosion(
+                            cause,
+                            state.getBlock().toString(),
+                            indirect
+                    )
             );
         }
     }
