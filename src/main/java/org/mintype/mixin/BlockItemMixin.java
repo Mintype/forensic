@@ -21,7 +21,7 @@ public class BlockItemMixin {
             BlockPlaceContext context,
             CallbackInfoReturnable<InteractionResult> cir
     ) {
-        if (!cir.getReturnValue().equals(InteractionResult.SUCCESS_SERVER)) {
+        if (!cir.getReturnValue().equals(InteractionResult.SUCCESS)) {
             return;
         }
 

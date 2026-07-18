@@ -24,7 +24,7 @@ public class SQLiteDatabase implements Database {
                 statement.execute("""
                     CREATE TABLE IF NOT EXISTS logs (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        player TEXT NOT NULL,
+                        player TEXT,
                         action TEXT NOT NULL,
                         world TEXT NOT NULL,
                         x INTEGER NOT NULL,
@@ -83,7 +83,7 @@ public class SQLiteDatabase implements Database {
 
                 for (LogEntry entry : entries) {
 
-                    statement.setString(1, entry.player().toString());
+                    statement.setString(1, entry.player() == null ? null : entry.player().toString());
                     statement.setString(2, entry.action().name());
                     statement.setString(3, entry.world());
                     statement.setInt(4, entry.x());
