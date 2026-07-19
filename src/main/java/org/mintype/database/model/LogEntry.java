@@ -6,7 +6,8 @@ import java.util.UUID;
 
 public record LogEntry(
         long id,
-        UUID player,
+        UUID playerUuid,
+        String playerName,
         ActionType action,
         String world,
         int x,

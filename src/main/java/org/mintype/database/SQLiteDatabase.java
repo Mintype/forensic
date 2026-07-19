@@ -29,7 +29,8 @@ public class SQLiteDatabase implements Database {
                 statement.execute("""
                     CREATE TABLE IF NOT EXISTS logs (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        player TEXT,
+                        player_uuid TEXT,
+                        player_name TEXT,
                         action TEXT NOT NULL,
                         world TEXT NOT NULL,
                         x INTEGER NOT NULL,
@@ -50,20 +51,30 @@ public class SQLiteDatabase implements Database {
     public void insert(LogEntry entry) {
         String sql = """
             INSERT INTO logs
-            (player, action, world, x, y, z, timestamp, data)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (player_uuid, player_name, action, world, x, y, z, timestamp, data)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, entry.player() == null ? null : entry.player().toString());
-            statement.setString(2, entry.action().name());
-            statement.setString(3, entry.world());
-            statement.setInt(4, entry.x());
-            statement.setInt(5, entry.y());
-            statement.setInt(6, entry.z());
-            statement.setLong(7, entry.timestamp());
-            statement.setString(8, entry.data() == null ? null : entry.data().toString());
+            statement.setString(
+                    1,
+                    entry.playerUuid() == null
+                            ? null
+                            : entry.playerUuid().toString()
+            );
+
+            statement.setString(
+                    2,
+                    entry.playerName()
+            );
+            statement.setString(3, entry.action().name());
+            statement.setString(4, entry.world());
+            statement.setInt(5, entry.x());
+            statement.setInt(6, entry.y());
+            statement.setInt(7, entry.z());
+            statement.setLong(8, entry.timestamp());
+            statement.setString(9, entry.data() == null ? null : entry.data().toString());
 
             statement.executeUpdate();
 
@@ -76,9 +87,9 @@ public class SQLiteDatabase implements Database {
     public void insertBatch(List<LogEntry> entries) {
 
         String sql = """
-        INSERT INTO logs
-        (player, action, world, x, y, z, timestamp, data)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO logs
+            (player_uuid, player_name, action, world, x, y, z, timestamp, data)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         try {
@@ -88,14 +99,24 @@ public class SQLiteDatabase implements Database {
 
                 for (LogEntry entry : entries) {
 
-                    statement.setString(1, entry.player() == null ? null : entry.player().toString());
-                    statement.setString(2, entry.action().name());
-                    statement.setString(3, entry.world());
-                    statement.setInt(4, entry.x());
-                    statement.setInt(5, entry.y());
-                    statement.setInt(6, entry.z());
-                    statement.setLong(7, entry.timestamp());
-                    statement.setString(8, entry.data() == null ? null : entry.data().toString());
+                    statement.setString(
+                            1,
+                            entry.playerUuid() == null
+                                    ? null
+                                    : entry.playerUuid().toString()
+                    );
+
+                    statement.setString(
+                            2,
+                            entry.playerName()
+                    );
+                    statement.setString(3, entry.action().name());
+                    statement.setString(4, entry.world());
+                    statement.setInt(5, entry.x());
+                    statement.setInt(6, entry.y());
+                    statement.setInt(7, entry.z());
+                    statement.setLong(8, entry.timestamp());
+                    statement.setString(9, entry.data() == null ? null : entry.data().toString());
 
                     statement.addBatch();
                 }
@@ -159,7 +180,9 @@ public class SQLiteDatabase implements Database {
 
             while (result.next()) {
 
-                String playerId = result.getString("player");
+                String playerId = result.getString("player_uuid");
+
+                String playerName = result.getString("player_name");
 
                 UUID player = playerId == null
                         ? null
@@ -177,6 +200,7 @@ public class SQLiteDatabase implements Database {
                 logs.add(new LogEntry(
                         result.getLong("id"),
                         player,
+                        playerName,
                         ActionType.valueOf(result.getString("action")),
                         result.getString("world"),
                         result.getInt("x"),

@@ -3,6 +3,7 @@ package org.mintype.mixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.block.state.BlockState;
 import org.mintype.Forensic;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
+import java.util.UUID;
 
 @Mixin(ServerExplosion.class)
 public class ServerExplosionMixin {
@@ -60,16 +62,27 @@ public class ServerExplosionMixin {
             LivingEntity indirect = ((ServerExplosion)(Object) this)
                     .getIndirectSourceEntity();
 
+            String playerName = null;
+            UUID playerUUID = null;
+
+            if (indirect instanceof Player player) {
+                playerName = player.getName().getString();
+                playerUUID = player.getUUID();
+            }
+
             Forensic.logger.log(
-                    null,
+                    playerUUID,
+                    playerName,
                     ActionType.EXPLOSION,
-                    level.dimension().toString(),
+                    level.dimension().identifier().getPath(),
                     pos.getX(),
                     pos.getY(),
                     pos.getZ(),
                     DataBuilder.explosion(
                             cause,
-                            state.getBlock().toString(),
+                            BuiltInRegistries.BLOCK
+                                    .getKey(state.getBlock())
+                                    .getPath(),
                             indirect
                     )
             );

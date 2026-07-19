@@ -1,7 +1,8 @@
 package org.mintype.inspect;
 
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import org.mintype.Forensic;
 import org.mintype.database.model.LogEntry;
@@ -15,6 +16,14 @@ public class InspectListener {
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 
+            if (world.isClientSide()) {
+                return InteractionResult.PASS;
+            }
+
+            if (hand != InteractionHand.MAIN_HAND) {
+                return InteractionResult.PASS;
+            }
+
             if (!Forensic.inspectManager.isInspecting(player)) {
                 return InteractionResult.PASS;
             }
@@ -22,7 +31,7 @@ public class InspectListener {
             var pos = hitResult.getBlockPos();
 
             List<LogEntry> logs = Forensic.database.getLogs(
-                    world.dimension().toString(),
+                    world.dimension().identifier().getPath(),
                     pos.getX(),
                     pos.getY(),
                     pos.getZ(),
@@ -37,21 +46,69 @@ public class InspectListener {
 
             } else {
 
+//                player.sendSystemMessage(
+//                        Component.literal(
+//                                "Found " + logs.size() + " logs:"
+//                        )
+//                );
+
+//                for (LogEntry log : logs) {
+//
+//                    player.sendSystemMessage(
+//                            LogFormatter.format(log)
+//                    );
+//                }
                 player.sendSystemMessage(
-                        Component.literal(
-                                "Found " + logs.size() + " logs:"
-                        )
+                        LogFormatter.formatLogs(logs)
                 );
-
-                for (LogEntry log : logs) {
-
-                    player.sendSystemMessage(
-                            LogFormatter.format(log)
-                    );
-                }
             }
 
             return InteractionResult.SUCCESS;
+        });
+
+
+        // Prevent using items
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+
+            if (world.isClientSide()) {
+                return InteractionResult.PASS;
+            }
+
+            if (!Forensic.inspectManager.isInspecting(player)) {
+                return InteractionResult.PASS;
+            }
+
+            return InteractionResult.FAIL;
+        });
+
+
+        // Prevent attacking entities
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+
+            if (world.isClientSide()) {
+                return InteractionResult.PASS;
+            }
+
+            if (!Forensic.inspectManager.isInspecting(player)) {
+                return InteractionResult.PASS;
+            }
+
+            return InteractionResult.FAIL;
+        });
+
+
+        // Prevent hitting entities
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+
+            if (world.isClientSide()) {
+                return InteractionResult.PASS;
+            }
+
+            if (!Forensic.inspectManager.isInspecting(player)) {
+                return InteractionResult.PASS;
+            }
+
+            return InteractionResult.FAIL;
         });
     }
 }

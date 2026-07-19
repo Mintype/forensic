@@ -1,5 +1,6 @@
 package org.mintype.mixin;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.InteractionResult;
@@ -42,12 +43,17 @@ public class BlockItemMixin {
 
         Forensic.logger.log(
                 player.getUUID(),
+                player.getName().getString(),
                 ActionType.BLOCK_PLACE,
-                world.dimension().toString(),
+                world.dimension().identifier().getPath(),
                 pos.getX(),
                 pos.getY(),
                 pos.getZ(),
-                DataBuilder.block(((BlockItem)(Object)this).getBlock().toString())
+                DataBuilder.block(
+                        BuiltInRegistries.BLOCK
+                                .getKey(((BlockItem)(Object) this).getBlock())
+                                .getPath()
+                )
         );
     }
 }

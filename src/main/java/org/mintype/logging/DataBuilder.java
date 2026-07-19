@@ -31,12 +31,12 @@ public class DataBuilder {
                     source.getType().toString()
             );
 
-            if (source instanceof Player player) {
-                json.addProperty(
-                        "player",
-                        player.getUUID().toString()
-                );
-            }
+//            if (source instanceof Player player) {
+//                json.addProperty(
+//                        "player",
+//                        player.getUUID().toString()
+//                );
+//            }
         }
 
         return json;

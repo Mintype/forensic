@@ -15,7 +15,8 @@ public class LoggerService {
     }
 
     public void log(
-            UUID player,
+            UUID playerUuid,
+            String playerName,
             ActionType action,
             String world,
             int x,
@@ -25,7 +26,8 @@ public class LoggerService {
     ) {
         LogEntry entry = new LogEntry(
                 0,
-                player,
+                playerUuid,
+                playerName,
                 action,
                 world,
                 x,

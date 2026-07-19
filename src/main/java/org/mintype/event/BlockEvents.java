@@ -2,6 +2,7 @@ package org.mintype.event;
 
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.mintype.logging.DataBuilder;
 import org.mintype.logging.LoggerService;
 import org.mintype.database.model.ActionType;
@@ -18,12 +19,17 @@ public class BlockEvents {
 
                     logger.log(
                             player.getUUID(),
+                            player.getName().getString(),
                             ActionType.BLOCK_BREAK,
-                            world.dimension().toString(),
+                            world.dimension().identifier().getPath(),
                             pos.getX(),
                             pos.getY(),
                             pos.getZ(),
-                            DataBuilder.block(block)
+                            DataBuilder.block(
+                                    BuiltInRegistries.BLOCK
+                                            .getKey(state.getBlock())
+                                            .getPath()
+                            )
                     );
 
                 }
