@@ -143,12 +143,27 @@ public class LogFormatter {
         return weeks + " week" + (weeks == 1 ? "" : "s");
     }
 
+    public static Component noLogsFound() {
+        MutableComponent message = Component.empty();
+        message.append(
+                Component.literal("[Forensic]")
+                        .withColor(ORANGE)
+        );
+        message.append(
+                Component.literal(" No logs found.")
+                        .withColor(GRAY)
+        );
+
+        return message;
+
+    }
+
     public static Component formatLogs(List<LogEntry> logs) {
 
         MutableComponent message = Component.empty();
 
         if (logs.isEmpty()) {
-            return Component.literal("[Forensic] No logs found.");
+            return noLogsFound();
         }
 
         LogEntry first = logs.get(0);

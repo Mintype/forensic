@@ -39,7 +39,7 @@ public class InspectListener {
             );
 
             if (logs.isEmpty()) {
-                player.sendSystemMessage(Component.literal("No logs found."));
+                player.sendSystemMessage(LogFormatter.noLogsFound());
             } else {
                 player.sendSystemMessage(LogFormatter.formatLogs(logs));
             }
@@ -66,7 +66,7 @@ public class InspectListener {
             );
 
             if (logs.isEmpty()) {
-                player.sendSystemMessage(Component.literal("No logs found."));
+                player.sendSystemMessage(LogFormatter.noLogsFound());
             } else {
                 player.sendSystemMessage(LogFormatter.formatLogs(logs));
             }
