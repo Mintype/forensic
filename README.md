@@ -29,7 +29,7 @@ Forensic is a lightweight server-side Fabric mod that logs player and world acti
 
 ### Logging
 
-- [ ] Container access (chests, barrels, shulkers, hoppers, etc.)
+- [x] Container access (chests, barrels, shulkers, hoppers, etc.)
 - [ ] Item insert/remove logging
 - [ ] Door, trapdoor, and fence gate interaction
 - [ ] Lever and button interaction
