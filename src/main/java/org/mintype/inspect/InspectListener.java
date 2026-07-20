@@ -39,33 +39,40 @@ public class InspectListener {
             );
 
             if (logs.isEmpty()) {
-
-                player.sendSystemMessage(
-                        Component.literal("No logs found.")
-                );
-
+                player.sendSystemMessage(Component.literal("No logs found."));
             } else {
-
-//                player.sendSystemMessage(
-//                        Component.literal(
-//                                "Found " + logs.size() + " logs:"
-//                        )
-//                );
-
-//                for (LogEntry log : logs) {
-//
-//                    player.sendSystemMessage(
-//                            LogFormatter.format(log)
-//                    );
-//                }
-                player.sendSystemMessage(
-                        LogFormatter.formatLogs(logs)
-                );
+                player.sendSystemMessage(LogFormatter.formatLogs(logs));
             }
 
             return InteractionResult.SUCCESS;
         });
 
+        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
+
+            if (world.isClientSide()) {
+                return InteractionResult.PASS;
+            }
+
+            if (!Forensic.inspectManager.isInspecting(player)) {
+                return InteractionResult.PASS;
+            }
+
+            List<LogEntry> logs = Forensic.database.getLogs(
+                    world.dimension().identifier().getPath(),
+                    pos.getX(),
+                    pos.getY(),
+                    pos.getZ(),
+                    5
+            );
+
+            if (logs.isEmpty()) {
+                player.sendSystemMessage(Component.literal("No logs found."));
+            } else {
+                player.sendSystemMessage(LogFormatter.formatLogs(logs));
+            }
+
+            return InteractionResult.FAIL; // prevents the block from being attacked
+        });
 
         // Prevent using items
         UseItemCallback.EVENT.register((player, world, hand) -> {
