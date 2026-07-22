@@ -208,6 +208,71 @@ public class LogFormatter {
 
     private static Component formatEntry(LogEntry log) {
 
+        return switch (log.action()) {
+            case EXPLOSION -> formatExplosion(log);
+            case CONTAINER_CHANGE -> formatContainerChange(log);
+            default -> formatNormal(log);
+        };
+    }
+
+    private static Component formatContainerChange(LogEntry log) {
+
+        MutableComponent message = Component.empty();
+
+        message.append(
+                Component.literal(
+                        formatTime(log.timestamp()) + " ago - "
+                ).withColor(GRAY)
+        );
+
+        if (log.playerName() != null) {
+            message.append(
+                    Component.literal(log.playerName())
+                            .withColor(ORANGE)
+            );
+        } else {
+            message.append(Component.literal("Unknown"));
+        }
+
+        String action = log.data().get("action").getAsString();
+
+        switch (action) {
+
+            case "inserted" ->
+                    message.append(Component.literal(" inserted "));
+
+            case "removed" ->
+                    message.append(Component.literal(" removed "));
+
+            case "changed" ->
+                    message.append(Component.literal(" changed "));
+
+            default ->
+                    message.append(Component.literal(" modified "));
+        }
+
+        String item = log.data().get("item").getAsString();
+
+        if (item.contains(":")) {
+            item = item.substring(item.indexOf(':') + 1);
+        }
+
+        int amount = log.data().get("amount").getAsInt();
+
+        message.append(
+                Component.literal(amount + " ")
+        );
+
+        message.append(
+                Component.literal(item)
+                        .withColor(ORANGE)
+        );
+
+        return message;
+    }
+
+    private static Component formatNormal(LogEntry log) {
+
         if (log.action() == ActionType.EXPLOSION) {
             return formatExplosion(log);
         }
