@@ -10,7 +10,9 @@ import java.util.List;
 public class LogFormatter {
 
     private static final int ORANGE = 0xFF9900;
-    private static final int GRAY = 0x808080;
+    private static final int GRAY   = 0x808080;
+    private static final int GREEN  = 0x00FF00;
+    private static final int RED    = 0xFF0000;
 
 //    public static Component format(LogEntry log) {
 //
@@ -210,9 +212,50 @@ public class LogFormatter {
 
         return switch (log.action()) {
             case EXPLOSION -> formatExplosion(log);
+            case CONTAINER_OPEN -> formatContainerOpen(log);
             case CONTAINER_CHANGE -> formatContainerChange(log);
             default -> formatNormal(log);
         };
+    }
+
+    private static Component formatContainerOpen(LogEntry log) {
+
+        MutableComponent message = Component.empty();
+
+        message.append(
+                Component.literal(
+                        formatTime(log.timestamp()) + " ago - "
+                ).withColor(GRAY)
+        );
+
+        if (log.playerName() != null) {
+            message.append(
+                    Component.literal(log.playerName())
+                            .withColor(ORANGE)
+            );
+        } else {
+            message.append(
+                    Component.literal("Unknown")
+            );
+        }
+
+        message.append(
+                Component.literal(" opened ")
+        );
+
+        if (log.data() != null && log.data().has("block")) {
+            message.append(
+                    Component.literal(
+                            log.data().get("block").getAsString()
+                    ).withColor(ORANGE)
+            );
+        } else {
+            message.append(
+                    Component.literal("container")
+            );
+        }
+
+        return message;
     }
 
     private static Component formatContainerChange(LogEntry log) {
@@ -236,13 +279,17 @@ public class LogFormatter {
 
         String action = log.data().get("action").getAsString();
 
+        int amountColor = GREEN;
+
         switch (action) {
 
             case "inserted" ->
                     message.append(Component.literal(" inserted "));
 
-            case "removed" ->
+            case "removed" -> {
                     message.append(Component.literal(" removed "));
+                    amountColor = RED;
+            }
 
             case "changed" ->
                     message.append(Component.literal(" changed "));
@@ -261,6 +308,7 @@ public class LogFormatter {
 
         message.append(
                 Component.literal(amount + " ")
+                        .withColor(amountColor)
         );
 
         message.append(
