@@ -41,4 +41,18 @@ public class DataBuilder {
 
         return json;
     }
+
+    public static JsonObject itemChange(
+            String action,
+            String item,
+            int amount
+    ) {
+        JsonObject json = new JsonObject();
+
+        json.addProperty("action", action);
+        json.addProperty("item", item);
+        json.addProperty("amount", amount);
+
+        return json;
+    }
 }
