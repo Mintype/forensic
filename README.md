@@ -125,6 +125,10 @@ The compiled mod will be located in:
 build/libs/
 ```
 
+## For Developers
+
+If you want to understand the codebase, contribute, or extend Forensic, see the [Developer Guide](DEVELOPERS.md).
+
 ## License
 
 MIT
