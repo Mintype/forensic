@@ -173,6 +173,7 @@ public class LogFormatter {
         // Header once
         message.append(
                 Component.literal("----- ")
+                        .withColor(GRAY)
         );
 
         message.append(
