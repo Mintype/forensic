@@ -77,7 +77,7 @@ public class AbstractContainerMenuMixin {
             int beforeCount = before.isEmpty() ? 0 : before.getCount();
             int afterCount = after.isEmpty() ? 0 : after.getCount();
 
-// Same item, only the amount changed
+            // Same item, only the amount changed
             if (!before.isEmpty()
                     && !after.isEmpty()
                     && ItemStack.isSameItemSameComponents(before, after)) {
@@ -120,7 +120,7 @@ public class AbstractContainerMenuMixin {
                 continue;
             }
 
-// Slot went from empty -> item
+            // Slot went from empty -> item
             if (before.isEmpty() && !after.isEmpty()) {
 
                 Forensic.logger.log(
@@ -141,7 +141,7 @@ public class AbstractContainerMenuMixin {
                 continue;
             }
 
-// Slot went from item -> empty
+            // Slot went from item -> empty
             if (!before.isEmpty() && after.isEmpty()) {
 
                 Forensic.logger.log(
@@ -162,7 +162,7 @@ public class AbstractContainerMenuMixin {
                 continue;
             }
 
-// Different items: log as removal + insertion
+            // Different items: log as removal + insertion
             if (!before.isEmpty() && !after.isEmpty()) {
 
                 Forensic.logger.log(
@@ -195,96 +195,6 @@ public class AbstractContainerMenuMixin {
                         )
                 );
             }
-
-//            if (!ItemStack.matches(before, after)) {
-//
-//                Slot changedSlot = menu.slots.get(i);
-//
-//                if (!(changedSlot.container instanceof ChestBlockEntity chest)) {
-//                    continue;
-//                }
-//
-//                BlockPos pos = chest.getBlockPos();
-//
-//                String item;
-//
-//                int amount;
-//                String action;
-//
-//                if (before.isEmpty() && !after.isEmpty()) {
-//
-//                    // Empty -> item
-//                    action = "inserted";
-//                    item = after.getItem().toString();
-//                    amount = after.getCount();
-//
-//                } else if (!before.isEmpty() && after.isEmpty()) {
-//
-//                    // Item -> empty
-//                    action = "removed";
-//                    item = before.getItem().toString();
-//                    amount = before.getCount();
-//
-//                } else if (!before.isEmpty() && !after.isEmpty()) {
-//
-//                    // Item -> same item, different amount
-//                    if (ItemStack.isSameItemSameComponents(before, after)) {
-//
-//                        int difference = after.getCount() - before.getCount();
-//
-//                        if (difference > 0) {
-//                            action = "added";
-//                            amount = difference;
-//                        } else if (difference < 0) {
-//                            action = "removed";
-//                            amount = -difference;
-//                        } else {
-//                            continue;
-//                        }
-//
-//                        item = after.getItem().toString();
-//
-//                    } else {
-//
-//                        // Different items
-//                        action = "changed";
-//                        item = after.getItem().toString();
-//                        amount = after.getCount();
-//                    }
-//
-//                } else {
-//                    continue;
-//                }
-//
-//
-////                System.out.println(
-////                        player.getName().getString()
-////                                + " "
-////                                + action
-////                                + " "
-////                                + amount
-////                                + " "
-////                                + item
-////                                + " at "
-////                                + pos
-////                );
-////
-////
-////                Forensic.logger.log(
-////                        player.getUUID(),
-////                        player.getName().getString(),
-////                        ActionType.CONTAINER_CHANGE,
-////                        player.level().dimension().identifier().getPath(),
-////                        pos.getX(),
-////                        pos.getY(),
-////                        pos.getZ(),
-////                        DataBuilder.itemChange(
-////                                action,
-////                                item,
-////                                amount
-////                        )
-////                );
-//            }
         }
     }
 }

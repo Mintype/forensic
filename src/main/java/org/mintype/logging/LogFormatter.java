@@ -14,87 +14,6 @@ public class LogFormatter {
     private static final int GREEN  = 0x00FF00;
     private static final int RED    = 0xFF0000;
 
-//    public static Component format(LogEntry log) {
-//
-//        MutableComponent message = Component.empty();
-//
-//        // ----- [Forensic] ----- (x:y:z)
-//        message.append(
-//                Component.literal("----- ")
-//        );
-//
-//        message.append(
-//                Component.literal("[Forensic]")
-//                        .withColor(ORANGE)
-//        );
-//
-//        message.append(
-//                Component.literal(
-//                        " ----- (x:" +
-//                                log.x() +
-//                                "/y:" +
-//                                log.y() +
-//                                "/z:" +
-//                                log.z() +
-//                                ")"
-//                ).withColor(GRAY)
-//        );
-//
-//
-//        // Time ago
-//        message.append(
-//                Component.literal(
-//                        "\n" + formatTime(log.timestamp()) + " ago - "
-//                ).withColor(GRAY)
-//        );
-//
-//
-//        // Player
-//        if (log.player() != null) {
-//            message.append(
-//                    Component.literal(
-//                            log.player().toString()
-//                    ).withColor(ORANGE)
-//            );
-//        } else {
-//            message.append(
-//                    Component.literal("Unknown")
-//            );
-//        }
-//
-//
-//        // Action
-//        message.append(
-//                Component.literal(
-//                        " " + formatAction(log)
-//                )
-//        );
-//
-//
-//        // Block
-//        if (log.data() != null && log.data().has("block")) {
-//
-//            message.append(
-//                    Component.literal(" (")
-//            );
-//
-//            message.append(
-//                    Component.literal(
-//                            log.data()
-//                                    .get("block")
-//                                    .getAsString()
-//                    ).withColor(ORANGE)
-//            );
-//
-//            message.append(
-//                    Component.literal(")")
-//            );
-//        }
-//
-//
-//        return message;
-//    }
-
     private static String formatAction(LogEntry log) {
 
         return switch (log.action()) {
@@ -361,10 +280,6 @@ public class LogFormatter {
                                     .getAsString()
                     ).withColor(ORANGE)
             );
-
-//            message.append(
-//                    Component.literal(")")
-//            );
         }
 
         return message;
@@ -381,8 +296,6 @@ public class LogFormatter {
         );
 
         String block = log.data().get("block").getAsString();
-
-//        message.append(Component.literal("("));
 
         message.append(
                 Component.literal(block)
