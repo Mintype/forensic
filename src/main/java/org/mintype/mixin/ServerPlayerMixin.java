@@ -42,7 +42,7 @@ public class ServerPlayerMixin {
                     player.getUUID(),
                     player.getName().getString(),
                     ActionType.CONTAINER_OPEN,
-                    level.dimension().identifier().toString(),
+                    level.dimension().identifier().getPath(),
                     pos.getX(),
                     pos.getY(),
                     pos.getZ(),

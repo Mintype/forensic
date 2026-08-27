@@ -10,88 +10,9 @@ import java.util.List;
 public class LogFormatter {
 
     private static final int ORANGE = 0xFF9900;
-    private static final int GRAY = 0x808080;
-
-//    public static Component format(LogEntry log) {
-//
-//        MutableComponent message = Component.empty();
-//
-//        // ----- [Forensic] ----- (x:y:z)
-//        message.append(
-//                Component.literal("----- ")
-//        );
-//
-//        message.append(
-//                Component.literal("[Forensic]")
-//                        .withColor(ORANGE)
-//        );
-//
-//        message.append(
-//                Component.literal(
-//                        " ----- (x:" +
-//                                log.x() +
-//                                "/y:" +
-//                                log.y() +
-//                                "/z:" +
-//                                log.z() +
-//                                ")"
-//                ).withColor(GRAY)
-//        );
-//
-//
-//        // Time ago
-//        message.append(
-//                Component.literal(
-//                        "\n" + formatTime(log.timestamp()) + " ago - "
-//                ).withColor(GRAY)
-//        );
-//
-//
-//        // Player
-//        if (log.player() != null) {
-//            message.append(
-//                    Component.literal(
-//                            log.player().toString()
-//                    ).withColor(ORANGE)
-//            );
-//        } else {
-//            message.append(
-//                    Component.literal("Unknown")
-//            );
-//        }
-//
-//
-//        // Action
-//        message.append(
-//                Component.literal(
-//                        " " + formatAction(log)
-//                )
-//        );
-//
-//
-//        // Block
-//        if (log.data() != null && log.data().has("block")) {
-//
-//            message.append(
-//                    Component.literal(" (")
-//            );
-//
-//            message.append(
-//                    Component.literal(
-//                            log.data()
-//                                    .get("block")
-//                                    .getAsString()
-//                    ).withColor(ORANGE)
-//            );
-//
-//            message.append(
-//                    Component.literal(")")
-//            );
-//        }
-//
-//
-//        return message;
-//    }
+    private static final int GRAY   = 0x808080;
+    private static final int GREEN  = 0x00FF00;
+    private static final int RED    = 0xFF0000;
 
     private static String formatAction(LogEntry log) {
 
@@ -171,6 +92,7 @@ public class LogFormatter {
         // Header once
         message.append(
                 Component.literal("----- ")
+                        .withColor(GRAY)
         );
 
         message.append(
@@ -207,6 +129,117 @@ public class LogFormatter {
     }
 
     private static Component formatEntry(LogEntry log) {
+
+        return switch (log.action()) {
+            case EXPLOSION -> formatExplosion(log);
+            case CONTAINER_OPEN -> formatContainerOpen(log);
+            case CONTAINER_CHANGE -> formatContainerChange(log);
+            default -> formatNormal(log);
+        };
+    }
+
+    private static Component formatContainerOpen(LogEntry log) {
+
+        MutableComponent message = Component.empty();
+
+        message.append(
+                Component.literal(
+                        formatTime(log.timestamp()) + " ago - "
+                ).withColor(GRAY)
+        );
+
+        if (log.playerName() != null) {
+            message.append(
+                    Component.literal(log.playerName())
+                            .withColor(ORANGE)
+            );
+        } else {
+            message.append(
+                    Component.literal("Unknown")
+            );
+        }
+
+        message.append(
+                Component.literal(" opened ")
+        );
+
+        if (log.data() != null && log.data().has("block")) {
+            message.append(
+                    Component.literal(
+                            log.data().get("block").getAsString()
+                    ).withColor(ORANGE)
+            );
+        } else {
+            message.append(
+                    Component.literal("container")
+            );
+        }
+
+        return message;
+    }
+
+    private static Component formatContainerChange(LogEntry log) {
+
+        MutableComponent message = Component.empty();
+
+        message.append(
+                Component.literal(
+                        formatTime(log.timestamp()) + " ago - "
+                ).withColor(GRAY)
+        );
+
+        if (log.playerName() != null) {
+            message.append(
+                    Component.literal(log.playerName())
+                            .withColor(ORANGE)
+            );
+        } else {
+            message.append(Component.literal("Unknown"));
+        }
+
+        String action = log.data().get("action").getAsString();
+
+        int amountColor = GREEN;
+
+        switch (action) {
+
+            case "inserted" ->
+                    message.append(Component.literal(" inserted "));
+
+            case "removed" -> {
+                    message.append(Component.literal(" removed "));
+                    amountColor = RED;
+            }
+
+            case "changed" ->
+                    message.append(Component.literal(" changed "));
+
+            default ->
+                    message.append(Component.literal(" modified "));
+        }
+
+        String item = log.data().get("item").getAsString();
+
+        if (item.contains(":")) {
+            item = item.substring(item.indexOf(':') + 1);
+        }
+
+        int amount = log.data().get("amount").getAsInt();
+
+        message.append(
+                Component.literal(amount + " ")
+                        .withColor(amountColor)
+        );
+
+        message.append(
+                Component.literal(item)
+                        .withColor(ORANGE)
+        );
+
+        return message;
+    }
+
+    private static Component formatNormal(LogEntry log) {
 
         if (log.action() == ActionType.EXPLOSION) {
             return formatExplosion(log);
@@ -247,10 +280,6 @@ public class LogFormatter {
                                     .getAsString()
                     ).withColor(ORANGE)
             );
-
-//            message.append(
-//                    Component.literal(")")
-//            );
         }
 
         return message;
@@ -267,8 +296,6 @@ public class LogFormatter {
         );
 
         String block = log.data().get("block").getAsString();
-
-//        message.append(Component.literal("("));
 
         message.append(
                 Component.literal(block)
