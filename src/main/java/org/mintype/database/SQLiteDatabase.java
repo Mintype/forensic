@@ -178,37 +178,41 @@ public class SQLiteDatabase implements Database {
 
             ResultSet result = statement.executeQuery();
 
+//            while (result.next()) {
+//
+//                String playerId = result.getString("player_uuid");
+//
+//                String playerName = result.getString("player_name");
+//
+//                UUID player = playerId == null
+//                        ? null
+//                        : UUID.fromString(playerId);
+//
+//                String dataString = result.getString("data");
+//
+//                JsonObject jsonData = null;
+//
+//                if (dataString != null) {
+//                    jsonData = JsonParser.parseString(dataString)
+//                            .getAsJsonObject();
+//                }
+//
+//                logs.add(new LogEntry(
+//                        result.getLong("id"),
+//                        player,
+//                        playerName,
+//                        ActionType.valueOf(result.getString("action")),
+//                        result.getString("world"),
+//                        result.getInt("x"),
+//                        result.getInt("y"),
+//                        result.getInt("z"),
+//                        result.getLong("timestamp"),
+//                        jsonData
+//                ));
+//            }
+
             while (result.next()) {
-
-                String playerId = result.getString("player_uuid");
-
-                String playerName = result.getString("player_name");
-
-                UUID player = playerId == null
-                        ? null
-                        : UUID.fromString(playerId);
-
-                String dataString = result.getString("data");
-
-                JsonObject jsonData = null;
-
-                if (dataString != null) {
-                    jsonData = JsonParser.parseString(dataString)
-                            .getAsJsonObject();
-                }
-
-                logs.add(new LogEntry(
-                        result.getLong("id"),
-                        player,
-                        playerName,
-                        ActionType.valueOf(result.getString("action")),
-                        result.getString("world"),
-                        result.getInt("x"),
-                        result.getInt("y"),
-                        result.getInt("z"),
-                        result.getLong("timestamp"),
-                        jsonData
-                ));
+                logs.add(readLog(result));
             }
 
         } catch (SQLException e) {
@@ -216,6 +220,120 @@ public class SQLiteDatabase implements Database {
         }
 
         return logs;
+    }
+
+    @Override
+    public List<LogEntry> lookupLogs(
+            String world,
+            Integer centerX,
+            Integer centerY,
+            Integer centerZ,
+            Integer range,
+            Long since,
+            String playerName,
+            String action,
+            int limit
+    ) {
+        List<LogEntry> logs = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT *
+        FROM logs
+        WHERE world = ?
+        """);
+
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(world);
+
+        // Range filter
+        if (range != null) {
+            sql.append("""
+            AND x BETWEEN ? AND ?
+            AND y BETWEEN ? AND ?
+            AND z BETWEEN ? AND ?
+            """);
+
+            parameters.add(centerX - range);
+            parameters.add(centerX + range);
+            parameters.add(centerY - range);
+            parameters.add(centerY + range);
+            parameters.add(centerZ - range);
+            parameters.add(centerZ + range);
+        }
+
+        // Time filter
+        if (since != null) {
+            sql.append(" AND timestamp >= ?");
+            parameters.add(since);
+        }
+
+        // Player filter
+        if (playerName != null) {
+            sql.append(" AND player_name = ?");
+            parameters.add(playerName);
+        }
+
+        // Action filter
+        if (action != null) {
+            sql.append(" AND action = ?");
+            parameters.add(action.toUpperCase());
+        }
+
+        sql.append("""
+        ORDER BY timestamp DESC
+        LIMIT ?
+        """);
+
+        parameters.add(limit);
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+
+            try (ResultSet result = statement.executeQuery()) {
+
+                while (result.next()) {
+                    logs.add(readLog(result));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to lookup logs.", e);
+        }
+
+        return logs;
+    }
+
+    private LogEntry readLog(ResultSet result) throws SQLException {
+
+        String playerId = result.getString("player_uuid");
+        String playerName = result.getString("player_name");
+
+        UUID playerUuid = playerId == null
+                ? null
+                : UUID.fromString(playerId);
+
+        String dataString = result.getString("data");
+
+        JsonObject jsonData = dataString == null
+                ? null
+                : JsonParser.parseString(dataString).getAsJsonObject();
+
+        return new LogEntry(
+                result.getLong("id"),
+                playerUuid,
+                playerName,
+                ActionType.valueOf(result.getString("action")),
+                result.getString("world"),
+                result.getInt("x"),
+                result.getInt("y"),
+                result.getInt("z"),
+                result.getLong("timestamp"),
+                jsonData
+        );
     }
 
     @Override
