@@ -11,6 +11,7 @@ public class ForensicCommand {
         dispatcher.register(
                 Commands.literal("forensic")
                         .then(InspectCommand.register())
+                        .then(LookupCommand.register())
         );
     }
 }

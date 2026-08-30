@@ -33,6 +33,31 @@ public interface Database {
     );
 
     /**
+     * Searches logs using optional filters.
+     *
+     * @param world world to search in
+     * @param centerX center X position, or null if no range filter
+     * @param centerY center Y position, or null if no range filter
+     * @param centerZ center Z position, or null if no range filter
+     * @param range block radius, or null
+     * @param since timestamp to search from, or null
+     * @param playerName player name filter, or null
+     * @param action action filter, or null
+     * @param limit maximum number of results
+     */
+    List<LogEntry> lookupLogs(
+            String world,
+            Integer centerX,
+            Integer centerY,
+            Integer centerZ,
+            Integer range,
+            Long since,
+            String playerName,
+            String action,
+            int limit
+    );
+
+    /**
      * Closes the database connection.
      */
     void close();
